@@ -1,0 +1,64 @@
+#!/usr/local/bin/python3
+
+import random
+
+MAX_BOGUS_TRIES = 5
+
+def get_answer():
+    tries = 0
+    while(1):
+        try:
+            ans = int(input())
+            return ans
+        except:
+            print("please answer with a number only (no alpha / punctuation)")
+            tries +=1
+            if(tries >= MAX_BOGUS_TRIES):
+                print("Clearly you're not paying attention. Good bye!")
+                exit(0)
+
+def game_over():
+    CONTINUE_RESPONSES = ["", "Y", "y"]
+    GAME_OVER_RESPONSES = ["n", "N"]
+    tries = 0
+    while(1):  
+        print("continue? ([Y]/n)")
+        ans = input()
+        if ans in CONTINUE_RESPONSES:
+            return False
+        elif ans in GAME_OVER_RESPONSES:
+            return True
+        else:
+            print("please answer with a number only (no alpha / punctuation)")
+            tries += 1
+            if(tries >= MAX_BOGUS_TRIES):
+                print("Clearly you're not paying attention. Game Over!")
+                return True
+
+def game():
+    correct = 0
+    incorrect = 0
+    while(1):
+        exponent = random.randint(0, 16)
+        print("what's 2^%d?" % (exponent))
+        ans = get_answer()
+        actual = 2**exponent
+        if(ans == actual):
+            print("Correct!")
+            correct+=1
+        else:
+            print("Incorrect: 2^%d = %d" % (exponent, actual))
+            incorrect += 1
+        if game_over():
+            return "Results: Total Questions: %d, Correct: %d, Incorrect: %d" %(correct+incorrect, correct, incorrect)
+
+def main():
+    print("TWOS REVIEW:")
+    print("Time to review the powers of TWO!")
+    results = game()
+    print(results)
+    print("Good bye!")
+
+
+if __name__ == "__main__":
+    main()
