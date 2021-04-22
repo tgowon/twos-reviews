@@ -37,27 +37,33 @@ def game_over():
 
 def game():
     correct = 0
+    correct_ans = set()
     incorrect = 0
+    incorrect_ans = set()
     while(1):
         exponent = random.randint(0, 16)
-        print("what's 2^%d?" % (exponent))
+        question = "2^%d" % (exponent)
+        print("what's %s?" % question)
         ans = get_answer()
         actual = 2**exponent
+        eq = "%s = %d"%(question,actual)
         if(ans == actual):
             print("Correct!")
             correct+=1
+            correct_ans.add(eq)
         else:
             print("Incorrect: 2^%d = %d" % (exponent, actual))
             incorrect += 1
+            incorrect_ans.add(eq)
         if game_over():
-            return "Results: Total Questions: %d, Correct: %d, Incorrect: %d" %(correct+incorrect, correct, incorrect)
+            return "Results: \nTotal Questions: %d\nCorrect: %d -> %s\nIncorrect: %d -> %s"%(correct+incorrect, correct, correct_ans, incorrect, incorrect_ans)
 
 def main():
     print("TWOS REVIEW:")
     print("Time to review the powers of TWO!")
     results = game()
     print(results)
-    print("Good bye!")
+    print("GAME OVER")
 
 
 if __name__ == "__main__":
