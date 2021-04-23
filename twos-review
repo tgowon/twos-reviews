@@ -1,6 +1,8 @@
 #!/usr/local/bin/python3
-
+from os import system, name
+from tabulate import tabulate
 import random
+from time import sleep
 
 MAX_BOGUS_TRIES = 5
 
@@ -11,57 +13,86 @@ def get_answer():
             ans = int(input())
             return ans
         except:
-            print("please answer with a number only (no alpha / punctuation)")
+            print("Please answer with a number only (no alpha / punctuation)")
             tries +=1
             if(tries >= MAX_BOGUS_TRIES):
                 print("Clearly you're not paying attention. Good bye!")
                 exit(0)
 
-def game_over():
-    CONTINUE_RESPONSES = ["", "Y", "y"]
-    GAME_OVER_RESPONSES = ["n", "N"]
+def prompt(msg):
+    YES_RESPONSES = ["", "Y", "y"]
+    NO_RESPONSES = ["n", "N"]
     tries = 0
     while(1):  
-        print("continue? ([Y]/n)")
+        print("%s ([Y]/n)"%(msg))
         ans = input()
-        if ans in CONTINUE_RESPONSES:
-            return False
-        elif ans in GAME_OVER_RESPONSES:
+        if ans in YES_RESPONSES:
             return True
+        elif ans in NO_RESPONSES:
+            return False
         else:
-            print("please answer with a number only (no alpha / punctuation)")
+            print("Please answer with a number only (no alpha / punctuation)")
             tries += 1
             if(tries >= MAX_BOGUS_TRIES):
                 print("Clearly you're not paying attention. Game Over!")
                 return True
 
-def game():
+def game_over():
+    return not prompt("Continue?")
+
+def game(limit):
     correct = 0
     correct_ans = set()
     incorrect = 0
     incorrect_ans = set()
     while(1):
-        exponent = random.randint(0, 16)
+        exponent = random.randint(0, limit)
         question = "2^%d" % (exponent)
         print("what's %s?" % question)
         ans = get_answer()
         actual = 2**exponent
         eq = "%s = %d"%(question,actual)
         if(ans == actual):
-            print("Correct!")
+            print("Correct!", end=" ")
             correct+=1
             correct_ans.add(eq)
         else:
-            print("Incorrect: 2^%d = %d" % (exponent, actual))
+            print("Incorrect: 2^%d = %d" % (exponent, actual), end=" ")
             incorrect += 1
             incorrect_ans.add(eq)
         if game_over():
             return "Results: \nTotal Questions: %d\nCorrect: %d -> %s\nIncorrect: %d -> %s"%(correct+incorrect, correct, correct_ans, incorrect, incorrect_ans)
 
+def clear():
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+    else:
+        _ = system('clear')
+
+def print_review_table(limit):
+    if limit < 0:
+        limit = 0
+    elif limit > 32:
+        limit = 32    
+    data = [[x,2**x] for x in range(limit+1) ]
+    print(tabulate(data,headers=["n","2n"]))
+
 def main():
+    clear()
     print("TWOS REVIEW:")
     print("Time to review the powers of TWO!")
-    results = game()
+    print("How many powers of 2 (0 - 32)?")
+    ans = get_answer()
+    if(prompt("Do you need to review?")):
+        print_review_table(ans)
+        if(prompt("Ready?")):
+            clear()
+        else:
+            while(not prompt("How about now?")):
+                sleep(5)
+            clear()
+    results = game(ans)
     print(results)
     print("GAME OVER")
 
